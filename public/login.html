@@ -355,9 +355,11 @@
         </div>
         <button type="submit" class="btn btn-primary">Login</button>
       </form>
-      <a href="register.html" class="register-link"
-        >Don't have a User account? Register</a
-      >
+
+      <a href="/register.html" class="register-link">
+        Don't have a User account? Register
+      </a>
+
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="js/theme.js"></script>
@@ -380,15 +382,24 @@
           : "Show Password";
       });
 
+      let hash = (str)=>{
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          hash = (hash << 5) - hash + str.charCodeAt(i);
+          hash |= 0; // convert to 32bit integer
+        }
+        return hash.toString();
+      }
       // --- Form Submission ---
       const loginForm = document.getElementById("loginForm");
-
       loginForm.addEventListener("submit", (e) => {
         e.preventDefault();
 
         // Get form values
+      
         const email = loginForm.email.value.trim();
         const password = loginForm.password.value.trim();
+        //console.log(password);
 
         // Validation for empty fields
         if (!email || !password) {
@@ -403,22 +414,66 @@
           return;
         }
 
-        // Success message
-        Swal.fire({
-          title: "Login Successful 🎉",
-          text: "You have logged in successfully!",
-          icon: "success",
-          confirmButtonColor: "#28a745",
-          background: "#f0fff4",
-          color: "#333",
-          timer: 1500,
-          showConfirmButton: false,
-        });
+        let existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+        let loggedInUsers = JSON.parse(localStorage.getItem("loggedInUsers")) || [];
+        let user_logged_in = loggedInUsers.find(user => user.email === email);
+        if(user_logged_in){
+          Swal.fire({
+            title: "User in session",
+            text: "User is already logged in",
+            icon: "warning",
+            confirmButtonColor: "#28a745",
+            background: "#f0fff4",
+            color: "#333",
+            timer: 1500,
+            showConfirmButton: false,
+          });
 
-        // Redirect after short delay 
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 1500); // 1.5 second delay
+          setTimeout(() => {
+            window.location.href = "/index.html";
+          }, 1500); // 1.5 second delay
+          return ;
+        }
+
+        const userDetails = existingUsers.find(user => (user.email === email && user.password === hash(password)));
+        //console.log(userDetails);
+        if(userDetails){
+          // Success message
+          //console.log(userDetails.username);
+          loggedInUsers.push({username: userDetails.username, email: email, role: userDetails.role});
+          localStorage.setItem("loggedInUsers",JSON.stringify(loggedInUsers));
+          sessionStorage.setItem("currentUser",JSON.stringify({username: userDetails.username, email: email, role: userDetails.role}));
+          Swal.fire({
+            title: "Login Successful 🎉",
+            text: "You have logged in successfully!",
+            icon: "success",
+            confirmButtonColor: "#28a745",
+            background: "#f0fff4",
+            color: "#333",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+
+          // Redirect after short delay 
+          setTimeout(() => {
+            window.location.href = "/donor_dashboard.html";
+          }, 1500); // 1.5 second delay
+          return ;
+        }
+        else{
+          Swal.fire({
+            title: "Login Unsuccessful",
+            text: "User not found",
+            icon: "error",
+            confirmButtonColor: "#28a745",
+            background: "#f0fff4",
+            color: "#333",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+          return ;
+        }
+        
       });
 
       // ## THIS BROKEN SECTION HAS BEEN REMOVED ##
