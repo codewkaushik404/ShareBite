@@ -9,7 +9,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Environment variables
-.env
+backend/src/.env
 
 # OS files
 .DS_Store
@@ -30,3 +30,8 @@ coverage/
 
 package.json
 package-lock.json
+
+#backend
+backend/node_modules/
+backend/package.json
+backend/package-lock.json
