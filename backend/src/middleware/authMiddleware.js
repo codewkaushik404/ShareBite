@@ -4,25 +4,31 @@ const Ngo = require('../models/Ngo');
 
 exports.protect = async (req, res, next) => {
   let token;
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+  if (req.headers?.authorization && req.headers.authorization.startsWith('Bearer')){
     token = req.headers.authorization.split(' ')[1];
   }
-
+  else if(req.cookies && req.cookies.token){
+    token = req.cookies.token
+  }
   if (!token) {
     return res.status(401).json({ message: 'Not authorized, no token' });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(decoded);
     // Try to find user or NGO
-    req.user = await User.findById(decoded.id).select('-password');
-    if (!req.user) {
-      req.user = await Ngo.findById(decoded.id).select('-password');
+    let user = await User.findById(decoded.id).select('-password');
+    if (!user) {
+      user = await Ngo.findById(decoded.id).select('-password');
     }
-    if (!req.user) {
-      return res.status(401).json({ message: 'User not found' });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
+    req.user = user
     req.user.role = decoded.role || 'user';
+    console.log(user)
     next();
   } catch (err) {
     console.error('Auth middleware error:', err);

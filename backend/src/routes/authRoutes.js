@@ -1,7 +1,8 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { register, login } = require('../controllers/authController');
-
+const { register, login, googleAuthCallback, logout } = require('../controllers/authController');
+const passport = require('../config/passport');
+const {protect} = require("../middleware/authMiddleware");
 const router = express.Router();
 
 router.post(
@@ -23,4 +24,12 @@ router.post(
   login
 );
 
+//GOOGLE - AUTH
+router.get('/google',passport.authenticate('google',{scope: ['profile','email']}));
+
+//GOOGLE -AUTH CALLBACK
+router.get('/google/callback',passport.authenticate('google', {session: false, failureRedirect: '/api/auth/login'}) ,googleAuthCallback);
+
+//LOGOUT
+router.get('/logout', protect, logout);
 module.exports = router;

@@ -27,3 +27,6 @@ coverage/
 
 # VSCode
 .vscode/
+
+package.json
+package-lock.json

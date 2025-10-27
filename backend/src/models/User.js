@@ -39,6 +39,10 @@ const userSchema = new mongoose.Schema(
     photo: {
       type: String
     },
+    isActive:{
+      type: Boolean,
+      default: false
+    },
     provider: {
       type: String,
       enum: ["local","google"],

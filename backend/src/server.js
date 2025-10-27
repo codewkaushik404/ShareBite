@@ -2,19 +2,22 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
-
+const cookieParser = require("cookie-parser");
 // Load environment variables from src/.env explicitly
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const ngoAuthRoutes = require('./routes/ngoAuthRoutes');
 const foodListingRoutes = require('./routes/foodListingRoutes');
+const passport = require('passport');
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
+app.use(passport.initialize());
 
 // Load rate limiter configuration from environment variables
 const RATE_LIMIT_WINDOW_MS = parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000; // Default: 15 minutes
