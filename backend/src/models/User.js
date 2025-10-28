@@ -9,8 +9,8 @@ const userSchema = new mongoose.Schema(
       //Make this field unique only for documents where it actually exists.
       /*
       MongoDB also treats null or missing values as equal when enforcing uniqueness.
-      and you insert multiple users without a googleId you’ll get a duplicate key error
-      cuz of null/missing values treated as same
+      and if you insert multiple users without a googleId you’ll get a duplicate key error
+      because of null/missing values treated as same
       */
       sparse: true,
       required: function(){

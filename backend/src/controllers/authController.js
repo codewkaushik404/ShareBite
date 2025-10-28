@@ -7,7 +7,7 @@ const generateToken = (userId) => {
   if (!secret) {
     throw new Error('JWT_SECRET is not set');
   }
-  return jwt.sign({ id: userId, role: 'user' }, secret, { expiresIn: '1hr' });
+  return jwt.sign({ id: userId, role: 'user' }, secret, { expiresIn: process.env.TOKEN_EXPIRY });
 };
 
 exports.register = async (req, res) => {
@@ -63,7 +63,9 @@ exports.login = async (req, res) => {
 exports.googleAuthCallback = async(req,res)=>{
   const token = generateToken(req.user._id);
   res.cookie('token',token,{
-    maxAge: 60*60*1000
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: process.env.COOKIE_EXPIRY
   });
 
   res.json({

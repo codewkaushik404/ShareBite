@@ -25,10 +25,10 @@ router.post(
 );
 
 //GOOGLE - AUTH
-router.get('/google',passport.authenticate('google',{scope: ['profile','email']}));
+router.get('/google', passport.authenticate('google',{scope: ['profile', 'email']}));
 
 //GOOGLE -AUTH CALLBACK
-router.get('/google/callback',passport.authenticate('google', {session: false, failureRedirect: '/api/auth/login'}) ,googleAuthCallback);
+router.get('/google/callback', passport.authenticate('google', {session: false, failureRedirect: '/api/auth/login'}), googleAuthCallback);
 
 //LOGOUT
 router.get('/logout', protect, logout);

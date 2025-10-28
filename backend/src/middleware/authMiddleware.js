@@ -16,7 +16,6 @@ exports.protect = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded);
     // Try to find user or NGO
     let user = await User.findById(decoded.id).select('-password');
     if (!user) {
@@ -24,11 +23,10 @@ exports.protect = async (req, res, next) => {
     }
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(401).json({ message: 'User not authenticated' });
     }
     req.user = user
     req.user.role = decoded.role || 'user';
-    console.log(user)
     next();
   } catch (err) {
     console.error('Auth middleware error:', err);
